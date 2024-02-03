@@ -16,7 +16,7 @@ import modules.style_sorter as style_sorter
 import modules.meta_parser
 import args_manager
 import copy
-
+import threading
 from modules.sdxl_styles import legal_style_names
 from modules.private_logger import get_current_html_path
 from modules.ui_gradio_extensions import reload_javascript
@@ -571,19 +571,16 @@ with shared.gradio_root:
             load_parameter_button
         ] + lora_ctrls, queue=False, show_progress=False)
 
-        generate_button.click(lambda: (gr.update(visible=True, interactive=True), gr.update(visible=True, interactive=True), gr.update(visible=False, interactive=False), [], True),
-                              outputs=[stop_button, skip_button, generate_button, gallery, state_is_generating]) \
-            .then(fn=refresh_seed, inputs=[seed_random, image_seed], outputs=image_seed) \
-            .then(advanced_parameters.set_all_advanced_parameters, inputs=adps) \
-            .then(fn=generate_clicked, inputs=ctrls, outputs=[progress_html, progress_window, progress_gallery, gallery]) \
-            .then(lambda: (gr.update(visible=True, interactive=True), gr.update(visible=False, interactive=False), gr.update(visible=False, interactive=False), False),
-                  outputs=[generate_button, stop_button, skip_button, state_is_generating]) \
-            .then(fn=lambda: None, _js='playNotification').then(fn=lambda: None, _js='refresh_grid_delayed')
+        generate_button.click(lambda: threading.Thread(target=generate_clicked_threaded, args=(ctrls,)).start(),
+                      outputs=[stop_button, skip_button, generate_button, gallery, state_is_generating]) \
+    .then(fn=refresh_seed, inputs=[seed_random, image_seed], outputs=image_seed) \
+    .then(advanced_parameters.set_all_advanced_parameters, inputs=adps) \
+    .then(fn=lambda: None, _js='playNotification').then(fn=lambda: None, _js='refresh_grid_delayed')
 
-        for notification_file in ['notification.ogg', 'notification.mp3']:
-            if os.path.exists(notification_file):
-                gr.Audio(interactive=False, value=notification_file, elem_id='audio_notification', visible=False)
-                break
+for notification_file in ['notification.ogg', 'notification.mp3']:
+    if os.path.exists(notification_file):
+        gr.Audio(interactive=False, value=notification_file, elem_id='audio_notification', visible=False)
+        break
 
         def trigger_describe(mode, img):
             if mode == flags.desc_type_photo:
