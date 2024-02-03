@@ -570,9 +570,16 @@ with shared.gradio_root:
             generate_button,
             load_parameter_button
         ] + lora_ctrls, queue=False, show_progress=False)
+        def generate_clicked_threaded(ctrls):
+            generate_clicked(ctrls)
+            gr.update(visible=True, interactive=True)
+            gr.update(visible=False, interactive=False)
+            gr.update(visible=False, interactive=False)
 
-        generate_button.click(lambda: threading.Thread(target=generate_clicked_threaded, args=(ctrls,)).start(),
-                      outputs=[stop_button, skip_button, generate_button, gallery, state_is_generating]) \
+        generate_button.click(lambda: (threading.Thread(target=generate_clicked_threaded, args=(ctrls,)).start()
+        stop_button, skip_button, generate_button, gallery, state_is_generating),
+
+            outputs=[stop_button, skip_button, generate_button, gallery, state_is_generating]) \
     .then(fn=refresh_seed, inputs=[seed_random, image_seed], outputs=image_seed) \
     .then(advanced_parameters.set_all_advanced_parameters, inputs=adps) \
     .then(fn=lambda: None, _js='playNotification').then(fn=lambda: None, _js='refresh_grid_delayed')
