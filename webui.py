@@ -577,10 +577,10 @@ with shared.gradio_root:
     .then(advanced_parameters.set_all_advanced_parameters, inputs=adps) \
     .then(fn=lambda: None, _js='playNotification').then(fn=lambda: None, _js='refresh_grid_delayed')
 
-for notification_file in ['notification.ogg', 'notification.mp3']:
-    if os.path.exists(notification_file):
-        gr.Audio(interactive=False, value=notification_file, elem_id='audio_notification', visible=False)
-        break
+        for notification_file in ['notification.ogg', 'notification.mp3']:
+            if os.path.exists(notification_file):
+                gr.Audio(interactive=False, value=notification_file, elem_id='audio_notification', visible=False)
+                break
 
         def trigger_describe(mode, img):
             if mode == flags.desc_type_photo:
