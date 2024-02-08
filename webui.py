@@ -500,7 +500,9 @@ with shared.gradio_root:
             image_seed,
             generate_button,
             load_parameter_button
-        ] + lora_ctrls, queue=False, show_progress=False)
+        ] + lora_ctrls, queue=False, show_progress=False,
+        concurrency_limit=20
+        )
 
         generate_button.click(
             lambda: (gr.update(visible=True, interactive=True), gr.update(visible=True, interactive=True), gr.update(visible=False, interactive=False), [], True),
