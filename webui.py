@@ -501,7 +501,7 @@ with shared.gradio_root:
             generate_button,
             load_parameter_button
         ] + lora_ctrls, queue=False, show_progress=False,
-        concurrency_limit=20
+        # concurrency_limit=20
         )
 
         generate_button.click(
