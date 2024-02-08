@@ -503,7 +503,7 @@ with shared.gradio_root:
         ] + lora_ctrls, queue=False, show_progress=False)
 
         generate_button.click(lambda: (gr.update(visible=True, interactive=True), gr.update(visible=True, interactive=True), gr.update(visible=False, interactive=False), [], True),
-                              outputs=[stop_button, skip_button, generate_button, gallery, state_is_generating]) \
+                              outputs=[stop_button, skip_button, generate_button, gallery, state_is_generating], concurrency_limit=20) \
             .then(fn=refresh_seed, inputs=[seed_random, image_seed], outputs=image_seed) \
             .then(advanced_parameters.set_all_advanced_parameters, inputs=adps) \
             .then(fn=generate_clicked, inputs=ctrls, outputs=[progress_html, progress_window, progress_gallery, gallery]) \
@@ -538,7 +538,7 @@ def dump_default_english_config():
 
 
 shared.gradio_root.queue(
-    default_concurrency_limit=2
+    default_concurrency_limit=20
 )
 
 shared.gradio_root.launch(
@@ -547,5 +547,6 @@ shared.gradio_root.launch(
     server_port=args_manager.args.port,
     share=args_manager.args.share,
     auth=check_auth if args_manager.args.share and auth_enabled else None,
-    blocked_paths=[constants.AUTH_FILENAME]
+    blocked_paths=[constants.AUTH_FILENAME],
+    max_threads=40
 )
