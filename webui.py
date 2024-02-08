@@ -505,7 +505,7 @@ with shared.gradio_root:
         generate_button.click(
             lambda: (gr.update(visible=True, interactive=True), gr.update(visible=True, interactive=True), gr.update(visible=False, interactive=False), [], True),
             outputs=[stop_button, skip_button, generate_button, gallery, state_is_generating],
-            concurrency_limit=20
+            # concurrency_limit=20
             ) \
             .then(fn=refresh_seed, inputs=[seed_random, image_seed], outputs=image_seed) \
             .then(advanced_parameters.set_all_advanced_parameters, inputs=adps) \
