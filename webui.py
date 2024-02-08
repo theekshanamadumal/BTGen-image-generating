@@ -537,9 +537,9 @@ def dump_default_english_config():
 # dump_default_english_config()
 
 
-# shared.gradio_root.queue(
-#     default_concurrency_limit=2
-# )
+shared.gradio_root.queue(
+    default_concurrency_limit=2
+)
 
 shared.gradio_root.launch(
     inbrowser=args_manager.args.in_browser,
